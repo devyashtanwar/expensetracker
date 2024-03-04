@@ -6,9 +6,9 @@ import { z } from 'zod';
 
 const signUpInput = z.object({
     fullName: z.string(),
-    username: z.string(),
-    email: z.string(),
-    password: z.string(),
+    username: z.string().min(5).max(20),
+    email: z.string().email().min(10).max(50),
+    password: z.string().min(8),
 });
 
 const router = express.Router();
@@ -43,10 +43,11 @@ router.post('/signup', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-    const identifier = req.body.identifier;
+    const { username, password } = req.body;
 
     const user = await User.findOne({
-        $or: [{ email: identifier }, { username: identifier }],
+        password,
+        username,
     });
 
     if (user) {
