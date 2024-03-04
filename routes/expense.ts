@@ -5,7 +5,7 @@ import { Transaction } from '../db/db';
 const router = express.Router();
 
 router.post('/transaction', authenticatejwt, async (req, res) => {
-    const { title, description, amount, credit, debit } = req.body;
+    const { title, description, amount, type } = req.body;
     const currentTime = new Date();
     const userId = req.headers['userId'];
 
@@ -13,8 +13,7 @@ router.post('/transaction', authenticatejwt, async (req, res) => {
         title,
         description,
         amount,
-        credit,
-        debit,
+        type,
         time: currentTime,
         userId,
     });
@@ -34,12 +33,6 @@ router.get('/transaction', authenticatejwt, async (req, res) => {
     const userId = req.headers['userId'];
     const transactions = await Transaction.find({ userId });
     res.json({ transactions });
-});
-
-router.get('/trans', async (req, res) => {
-    res.json({
-        message: 'Hi there!',
-    });
 });
 
 router.put('/transaction/:transactionId', authenticatejwt, (req, res) => {
