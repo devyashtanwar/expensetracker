@@ -17,15 +17,14 @@ const middle_1 = require("../middlewares/middle");
 const db_1 = require("../db/db");
 const router = express_1.default.Router();
 router.post('/transaction', middle_1.authenticatejwt, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { title, description, amount, credit, debit } = req.body;
+    const { title, description, amount, type } = req.body;
     const currentTime = new Date();
     const userId = req.headers['userId'];
     const transaction = new db_1.Transaction({
         title,
         description,
         amount,
-        credit,
-        debit,
+        type,
         time: currentTime,
         userId,
     });
@@ -45,11 +44,6 @@ router.get('/transaction', middle_1.authenticatejwt, (req, res) => __awaiter(voi
     const userId = req.headers['userId'];
     const transactions = yield db_1.Transaction.find({ userId });
     res.json({ transactions });
-}));
-router.get('/trans', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.json({
-        message: 'Hi there!',
-    });
 }));
 router.put('/transaction/:transactionId', middle_1.authenticatejwt, (req, res) => {
     const { transactionId } = req.params;
