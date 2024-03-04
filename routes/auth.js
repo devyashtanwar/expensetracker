@@ -19,9 +19,9 @@ const db_1 = require("../db/db");
 const zod_1 = require("zod");
 const signUpInput = zod_1.z.object({
     fullName: zod_1.z.string(),
-    username: zod_1.z.string(),
-    email: zod_1.z.string(),
-    password: zod_1.z.string(),
+    username: zod_1.z.string().min(5).max(20),
+    email: zod_1.z.string().email().min(10).max(50),
+    password: zod_1.z.string().min(8),
 });
 const router = express_1.default.Router();
 router.post('/signup', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -51,9 +51,10 @@ router.post('/signup', (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 }));
 router.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const identifier = req.body.identifier;
+    const { username, password } = req.body;
     const user = yield db_1.User.findOne({
-        $or: [{ email: identifier }, { username: identifier }],
+        password,
+        username,
     });
     if (user) {
         const token = jsonwebtoken_1.default.sign({ id: user._id }, middle_1.SECRET, { expiresIn: '1h' });
