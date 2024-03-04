@@ -15,23 +15,23 @@ router.post('/transaction', authenticatejwt, async (req, res) => {
         amount,
         type,
         time: currentTime,
-        userId,
+        user: userId,
     });
     await transaction.save();
     if (transaction) {
-        res.send(401).json({
+        res.status(200).json({
             message: 'Transaction created.',
         });
     } else {
-        res.send(403).json({
+        res.status(403).json({
             message: 'Transaction creation failed.',
         });
     }
 });
 
-router.get('/transaction', authenticatejwt, async (req, res) => {
+router.get('/transactions', authenticatejwt, async (req, res) => {
     const userId = req.headers['userId'];
-    const transactions = await Transaction.find({ userId });
+    const transactions = await Transaction.find({ user: userId });
     res.json({ transactions });
 });
 
