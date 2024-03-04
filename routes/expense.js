@@ -26,23 +26,23 @@ router.post('/transaction', middle_1.authenticatejwt, (req, res) => __awaiter(vo
         amount,
         type,
         time: currentTime,
-        userId,
+        user: userId,
     });
     yield transaction.save();
     if (transaction) {
-        res.send(401).json({
+        res.status(200).json({
             message: 'Transaction created.',
         });
     }
     else {
-        res.send(403).json({
+        res.status(403).json({
             message: 'Transaction creation failed.',
         });
     }
 }));
-router.get('/transaction', middle_1.authenticatejwt, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/transactions', middle_1.authenticatejwt, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.headers['userId'];
-    const transactions = yield db_1.Transaction.find({ userId });
+    const transactions = yield db_1.Transaction.find({ user: userId });
     res.json({ transactions });
 }));
 router.put('/transaction/:transactionId', middle_1.authenticatejwt, (req, res) => {
