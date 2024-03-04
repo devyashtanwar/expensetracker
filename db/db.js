@@ -17,8 +17,7 @@ const transactionSchema = new mongoose_1.default.Schema({
     title: String,
     description: String,
     amount: Number,
-    credit: Boolean,
-    debit: Boolean,
+    type: String,
     time: Date,
     user: { type: mongoose_1.default.Schema.ObjectId, ref: 'User' },
 });
