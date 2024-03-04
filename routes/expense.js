@@ -15,21 +15,34 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const middle_1 = require("../middlewares/middle");
 const db_1 = require("../db/db");
+const zod_1 = require("zod");
+const transactionInput = zod_1.z.object({
+    title: zod_1.z.string().min(5).max(30),
+    description: zod_1.z.undefined(),
+    amount: zod_1.z.number().nonnegative().safe().finite(),
+    type: zod_1.z.string(),
+});
 const router = express_1.default.Router();
 router.post('/transaction', middle_1.authenticatejwt, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { title, description, amount, type } = req.body;
+    const parsedResponse = transactionInput.safeParse(req.body);
     const currentTime = new Date();
     const userId = req.headers['userId'];
-    const transaction = new db_1.Transaction({
+    if (!parsedResponse) {
+        return res.status(401).json({
+            message: 'Give correct inputs.',
+        });
+    }
+    const { title, description, amount, type } = req.body;
+    const createTransaction = new db_1.Transaction({
         title,
         description,
         amount,
         type,
-        time: currentTime,
+        currentTime,
         user: userId,
     });
-    yield transaction.save();
-    if (transaction) {
+    yield createTransaction.save();
+    if (createTransaction) {
         res.status(200).json({
             message: 'Transaction created.',
         });
