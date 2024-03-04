@@ -1,24 +1,42 @@
 import express from 'express';
 import { authenticatejwt, SECRET } from '../middlewares/middle';
 import { Transaction } from '../db/db';
+import { z } from 'zod';
+
+const transactionInput = z.object({
+    title: z.string().min(5).max(30),
+    description: z.undefined(),
+    amount: z.number().nonnegative().safe().finite(),
+    type: z.string(),
+});
 
 const router = express.Router();
 
 router.post('/transaction', authenticatejwt, async (req, res) => {
-    const { title, description, amount, type } = req.body;
+    const parsedResponse = transactionInput.safeParse(req.body);
     const currentTime = new Date();
     const userId = req.headers['userId'];
 
-    const transaction = new Transaction({
+    if (!parsedResponse) {
+        return res.status(401).json({
+            message: 'Give correct inputs.',
+        });
+    }
+
+    const { title, description, amount, type } = req.body;
+
+    const createTransaction = new Transaction({
         title,
         description,
         amount,
         type,
-        time: currentTime,
+        currentTime,
         user: userId,
     });
-    await transaction.save();
-    if (transaction) {
+
+    await createTransaction.save();
+
+    if (createTransaction) {
         res.status(200).json({
             message: 'Transaction created.',
         });
