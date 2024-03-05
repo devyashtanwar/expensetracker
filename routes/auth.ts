@@ -68,7 +68,7 @@ router.get('/me', authenticatejwt, async (req, res) => {
     const user = await User.findOne({ _id: userId });
 
     if (user) {
-        res.json({ username: user.username });
+        res.json({ user });
     } else {
         res.status(403).json({
             message: 'User not logged in.',
