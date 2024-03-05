@@ -73,7 +73,7 @@ router.get('/me', middle_1.authenticatejwt, (req, res) => __awaiter(void 0, void
     const userId = req.headers['userId'];
     const user = yield db_1.User.findOne({ _id: userId });
     if (user) {
-        res.json({ username: user.username });
+        res.json({ user });
     }
     else {
         res.status(403).json({
