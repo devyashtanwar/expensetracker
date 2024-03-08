@@ -2,6 +2,7 @@ import express from 'express';
 import { authenticatejwt, SECRET } from '../middlewares/middle';
 import { Transaction } from '../db/db';
 import { z } from 'zod';
+import moment from 'moment-timezone';
 
 const transactionInput = z.object({
     title: z.string().min(5).max(30),
@@ -14,7 +15,7 @@ const router = express.Router();
 
 router.post('/transaction', authenticatejwt, async (req, res) => {
     const parsedResponse = transactionInput.safeParse(req.body);
-    const currentTime = new Date();
+    const currentTime = moment().tz('Asia/Kolkata').toISOString();
     const userId = req.headers['userId'];
 
     if (!parsedResponse) {
@@ -24,6 +25,8 @@ router.post('/transaction', authenticatejwt, async (req, res) => {
     }
 
     const { title, description, amount, type } = req.body;
+
+    console.log('Current Time', currentTime);
 
     const createTransaction = new Transaction({
         title,
