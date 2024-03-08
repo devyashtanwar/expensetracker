@@ -16,6 +16,7 @@ const express_1 = __importDefault(require("express"));
 const middle_1 = require("../middlewares/middle");
 const db_1 = require("../db/db");
 const zod_1 = require("zod");
+const moment_timezone_1 = __importDefault(require("moment-timezone"));
 const transactionInput = zod_1.z.object({
     title: zod_1.z.string().min(5).max(30),
     description: zod_1.z.undefined(),
@@ -25,7 +26,7 @@ const transactionInput = zod_1.z.object({
 const router = express_1.default.Router();
 router.post('/transaction', middle_1.authenticatejwt, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const parsedResponse = transactionInput.safeParse(req.body);
-    const currentTime = new Date();
+    const currentTime = (0, moment_timezone_1.default)().tz('Asia/Kolkata').toISOString();
     const userId = req.headers['userId'];
     if (!parsedResponse) {
         return res.status(401).json({
@@ -33,6 +34,7 @@ router.post('/transaction', middle_1.authenticatejwt, (req, res) => __awaiter(vo
         });
     }
     const { title, description, amount, type } = req.body;
+    console.log('Current Time', currentTime);
     const createTransaction = new db_1.Transaction({
         title,
         description,
