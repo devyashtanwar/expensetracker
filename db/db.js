@@ -18,7 +18,7 @@ const transactionSchema = new mongoose_1.default.Schema({
     description: String,
     amount: Number,
     type: String,
-    time: Date,
+    time: { type: Date, default: Date.now },
     user: { type: mongoose_1.default.Schema.ObjectId, ref: 'User' },
 });
 exports.Transaction = mongoose_1.default.model('Transaction', transactionSchema);
